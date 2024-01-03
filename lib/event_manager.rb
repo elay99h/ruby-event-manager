@@ -56,7 +56,7 @@ end
 csv_content.each do |row|
   id = row[0]
   name = row[:first_name]
-  home_phone = clean_homephone([:homephone])
+  home_phone = clean_homephone(row[:homephone])
   zipcode = clean_zipcode(row[:zipcode])
   legislators = legislators_by_zipcode(zipcode)
   form_letter = erb_template.result(binding)
