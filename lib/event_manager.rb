@@ -30,14 +30,23 @@ def legislators_by_zipcode(zip)
   end
 end
 
+def save_thank_you_letter(id, form_letter)
+      Dir.mkdir('output') unless Dir.exsist?('output')
+
+      file_name = "output/thanks_to_#{id}.html"
+
+      File.open(file_name, "w") do |file|
+        file.puts form_letter
+      end
+
+end
+
 csv_content.each do |row|
+  id = row[0]
   name = row[:first_name]
   zipcode = clean_zipcode(row[:zipcode])
   legislators = legislators_by_zipcode(zipcode)
-
-    form_letter = erb_template.result(binding)
-
-    puts form_letter
-
+  form_letter = erb_template.result(binding)
+  save_thank_you_letter(id, form_letter)
 
 end
