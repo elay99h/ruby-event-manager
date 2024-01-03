@@ -1,10 +1,12 @@
 require 'csv'
 require 'google/apis/civicinfo_v2'
+require 'erb'
 
 civic_info = Google::Apis::CivicinfoV2::CivicInfoService.new
 civic_info.key = "AIzaSyClRzDqDh5MsXwnCWi0kOiiBivP6JsSyBw"
-
 csv_content = CSV.open('../event_attendees.csv', headers: true, header_converters: :symbol)
+templete_letter = File.read("../form_letter.erb")
+erb_template = ERB.new(templete_letter)
 
 def clean_zipcode(zipcode)
   zipcode.to_s.rjust(5, "0")[0..4]
@@ -21,11 +23,8 @@ def legislators_by_zipcode(zip)
     )
     legislators = legislators.officials
 
-    legislator_names = legislators.map do |legislator|
-      legislator.name
-    end
+    return legislators
 
-    legislator_names.join(",")
   rescue => e
     "#{e}"
   end
@@ -34,7 +33,11 @@ end
 csv_content.each do |row|
   name = row[:first_name]
   zipcode = clean_zipcode(row[:zipcode])
-  legislators_name = legislators_by_zipcode(zipcode)
+  legislators = legislators_by_zipcode(zipcode)
 
-  puts "-----------------------------------\nName : #{name}\nZipCode : #{zipcode}\nLegislators : #{legislators_name}\n-----------------------------------\n"
+    form_letter = erb_template.result(binding)
+
+    puts form_letter
+
+
 end
