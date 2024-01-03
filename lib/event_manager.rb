@@ -14,19 +14,17 @@ def clean_zipcode(zipcode)
   zipcode.to_s.rjust(5, "0")[0..4]
 end
 
-
 def find_peak_hours(hours)
-    registration_hour_count = {}
+  registration_hour_count = {}
 
-    hours.each do |hour|
-      registration_hour_count[hour] ||= 1
-    end
+  hours.each do |hour|
+    registration_hour_count[hour] ||= 1
+  end
 
-    peak_hour_count = registration_hour_count.values.max
-    peak_hours = registration_hour_count.select { |hour, count|  count == peak_hour_count}.keys
+  peak_hour_count = registration_hour_count.values.max
+  peak_hours = registration_hour_count.select { |hour, count| count == peak_hour_count }.keys
 
-    peak_hours
-
+  peak_hours
 end
 
 def clean_homephone(phone)
@@ -34,10 +32,10 @@ def clean_homephone(phone)
     "Valid number"
 
   elsif phone.length < 10 || phone.length > 11 || phone.length == 11 && phone.chars[0] != "1"
-  "Bad Number"
+    "Bad Number"
 
-  elsif  phone.length == 11 && phone.chars[0] == "1"
-  phone.slice(1..-1)
+  elsif phone.length == 11 && phone.chars[0] == "1"
+    phone.slice(1..-1)
   end
 end
 
@@ -53,7 +51,6 @@ def legislators_by_zipcode(zip)
     legislators = legislators.officials
 
     return legislators
-
   rescue => e
     "#{e}"
   end
@@ -66,14 +63,13 @@ def hours_from_date(date)
 end
 
 def save_thank_you_letter(id, form_letter)
-      Dir.mkdir('output') unless Dir.exist?('output')
+  Dir.mkdir('output') unless Dir.exist?('output')
 
-      file_name = "output/thanks_to_#{id}.html"
+  file_name = "output/thanks_to_#{id}.html"
 
-      File.open(file_name, "w") do |file|
-        file.puts form_letter
-      end
-
+  File.open(file_name, "w") do |file|
+    file.puts form_letter
+  end
 end
 
 csv_content.each do |row|
@@ -82,11 +78,11 @@ csv_content.each do |row|
   name = row[:first_name]
   reg_date_hours = Time.strptime(reg_date, "%m/%d/%y %H:%M").hour
   registration_data << reg_date_hours
-  #home_phone = clean_homephone(row[:homephone])
-  #zipcode = clean_zipcode(row[:zipcode])
-  #legislators = legislators_by_zipcode(zipcode)
-  #form_letter = erb_template.result(binding)
-  #save_thank_you_letter(id, form_letter)
+  home_phone = clean_homephone(row[:homephone])
+  zipcode = clean_zipcode(row[:zipcode])
+  legislators = legislators_by_zipcode(zipcode)
+  form_letter = erb_template.result(binding)
+  save_thank_you_letter(id, form_letter)
 end
 
 peak_h = find_peak_hours(registration_data)
