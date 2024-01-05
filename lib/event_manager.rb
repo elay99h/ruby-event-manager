@@ -1,4 +1,3 @@
-
 require 'csv'
 require 'google/apis/civicinfo_v2'
 require 'erb'
@@ -12,34 +11,34 @@ registration_hours = []
 registration_days = []
 
 def day_targeting(data)
+  registration_day_count = Hash.new(0)
 
-      registration_day_count = Hash.new(0)
+  data.each do |idx|
+    registration_day_count[Date::DAYNAMES[idx].to_s] += 1
+  end
 
-      data.each do |idx|
-        registration_day_count[Date::DAYNAMES[idx].to_s] += 1
-      end
+  max_v = registration_day_count.values.max
 
-      max_v = registration_day_count.values.max
+  most_reg_d = registration_day_count.select { |day, count| count == max_v }.keys
 
-      most_reg_d = registration_day_count.select{ |day, count| count == max_v}.keys
-
-      most_reg_d
+  most_reg_d
 end
 
 def find_peak_hours(data)
-    registration_hour_count = Hash.new(0)
+  registration_hour_count = Hash.new(0)
 
-    data.each do |d|
-      registration_hour_count[d] += 1
-    end
+  data.each do |d|
+    registration_hour_count[d] += 1
+  end
 
-    max_v = registration_hour_count.values.max
-    peak_hours = registration_hour_count.select{ |hour, count| count == max_v}.keys.to_a
+  max_v = registration_hour_count.values.max
+  peak_hours = registration_hour_count.select { |hour, count| count == max_v }.keys.to_a
 
-    peak_hours
+  peak_hours
 end
+
 def get_hour_f_date(date)
-     return Time.strptime(date,"%m/%d/%y %H:%M").hour
+  return Time.strptime(date, "%m/%d/%y %H:%M").hour
 end
 
 def clean_zipcode(zipcode)
@@ -47,7 +46,6 @@ def clean_zipcode(zipcode)
 end
 
 def clean_homephone(phone)
-
   if phone.length == 10
     "Valid number"
   elsif phone.length < 10 || phone.length > 11 || phone.length == 11 && phone.chars[0] != "1"
@@ -56,10 +54,9 @@ def clean_homephone(phone)
   elsif phone.length == 11 && phone.chars[0] == "1"
     phone.slice(1..-1)
   end
-
 end
-def legislators_by_zipcode(zip)
 
+def legislators_by_zipcode(zip)
   civic_info = Google::Apis::CivicinfoV2::CivicInfoService.new
   civic_info.key = "AIzaSyClRzDqDh5MsXwnCWi0kOiiBivP6JsSyBw"
 
@@ -75,8 +72,8 @@ def legislators_by_zipcode(zip)
     "#{e}"
   end
 end
-def save_thank_you_letter(id, form_letter)
 
+def save_thank_you_letter(id, form_letter)
   Dir.mkdir('output') unless Dir.exist?('output')
   file_name = "output/thanks_to_#{id}.html"
 
@@ -86,7 +83,6 @@ def save_thank_you_letter(id, form_letter)
 end
 
 csv_content.each do |row|
-
   att_id = row[0]
   reg_date = row[:regdate]
   name = row[:first_name]
@@ -97,7 +93,6 @@ csv_content.each do |row|
   legislators = legislators_by_zipcode(zipcode)
   form_letter = erb_template.result(binding)
   save_thank_you_letter(att_id, form_letter)
-
 end
 # --------------------------- #
 
