@@ -1,7 +1,34 @@
 <html>
 <head>
   <meta charset='UTF-8'>
-  <title>❤️  <%= name %></title>
+  <title>For <%= name %></title>
+
+  <style type="text/css">
+    
+    * {
+      font-family: sans-serif;
+    }
+
+    h1 {
+      font-size: 2rem;
+      background-color: #e91e63;
+      color: #fff;
+      padding: 20px;
+    }
+
+    p {
+      font-size: 18px;
+      padding: 10px;
+      background-color: #f9f9f9;
+    }
+
+    table {
+      border: 1px solid #000;
+      padding: 10px;
+    }
+
+  </style>
+
 </head>
 <body>
   <h1>Thanks <%= name %></h1>
@@ -26,5 +53,10 @@
       <td><%= "#{legislators}" %></td>
     <% end %>
   </table>
+
+  <footer>
+    <p>Made with love by Elayachi Hamrt</p>
+  </footer>
+
 </body>
 </html>
