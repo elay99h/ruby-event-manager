@@ -1,12 +1,30 @@
+
 require 'csv'
 require 'google/apis/civicinfo_v2'
 require 'erb'
 require 'time'
+require 'date'
 
 csv_content = CSV.open('../event_attendees.csv', headers: true, header_converters: :symbol)
 templete_letter = File.read("../form_letter.erb")
 erb_template = ERB.new(templete_letter)
 registration_hours = []
+registration_days = []
+
+def day_targeting(data)
+
+      registration_day_count = Hash.new(0)
+
+      data.each do |idx|
+        registration_day_count[Date::DAYNAMES[idx].to_s] += 1
+      end
+
+      max_v = registration_day_count.values.max
+
+      most_reg_d = registration_day_count.select{ |day, count| count == max_v}.keys
+
+      most_reg_d
+end
 
 def find_peak_hours(data)
     registration_hour_count = Hash.new(0)
@@ -20,16 +38,14 @@ def find_peak_hours(data)
 
     peak_hours
 end
-
 def get_hour_f_date(date)
      return Time.strptime(date,"%m/%d/%y %H:%M").hour
 end
 
-# --------------------------- #
 def clean_zipcode(zipcode)
   zipcode.to_s.rjust(5, "0")[0..4]
 end
-# --------------------------- #
+
 def clean_homephone(phone)
 
   if phone.length == 10
@@ -42,7 +58,6 @@ def clean_homephone(phone)
   end
 
 end
-# --------------------------- #
 def legislators_by_zipcode(zip)
 
   civic_info = Google::Apis::CivicinfoV2::CivicInfoService.new
@@ -60,7 +75,6 @@ def legislators_by_zipcode(zip)
     "#{e}"
   end
 end
-# --------------------------- #
 def save_thank_you_letter(id, form_letter)
 
   Dir.mkdir('output') unless Dir.exist?('output')
@@ -70,15 +84,14 @@ def save_thank_you_letter(id, form_letter)
     file.puts form_letter
   end
 end
-# --------------------------- #
 
-# ---------- MAIN ------------- #
 csv_content.each do |row|
 
   att_id = row[0]
   reg_date = row[:regdate]
   name = row[:first_name]
   registration_hours << get_hour_f_date(reg_date)
+  registration_days << Date.strptime(reg_date, "%m/%d/%y").wday
   home_phone = clean_homephone(row[:homephone])
   zipcode = clean_zipcode(row[:zipcode])
   legislators = legislators_by_zipcode(zipcode)
@@ -90,3 +103,6 @@ end
 
 peak_h = find_peak_hours(registration_hours).join(", ")
 puts "Peak registration hours: #{peak_h}"
+
+most_registed_day = day_targeting(registration_days)
+puts "The days with the most registrations : #{most_registed_day.join(", ")}"
