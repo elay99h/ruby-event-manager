@@ -10,21 +10,4 @@ ERB Templates: Generate personalized thank-you letters using ERB templates.
 Data Analysis:
 Identify peak registration hours.
 Determine the days with the most registrations.
-Usage:
 
-Place the event attendee CSV file in the specified location.
-Run the script to process the data and generate personalized thank-you letters.
-Obtain insights into peak registration hours and days with the most registrations.
-Dependencies:
-
-Ruby
-Google Civic Information API key
-How to Run:
-
-bash
-Copy code
-ruby event_manager.rb
-Note:
-Ensure you have the necessary API key and properly configure the CSV file location.
-
-Feel free to customize the description to better suit the specifics of your project!
