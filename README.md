@@ -24,4 +24,4 @@ This Ruby script utilizes CSV parsing, Google Civic Information API, and ERB tem
 
 **How to Run:**
 
-ruby event_manager
+ruby event_manager.rb
